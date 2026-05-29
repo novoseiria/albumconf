@@ -9,13 +9,28 @@ mod album;
 mod cli;
 mod outcome;
 
+use crate::album::{Album, AlbumFolder};
 use crate::cli::Cli;
+use crate::outcome::Outcome;
 
 
 
 fn main()
 {
+	if let Err(err) = run()
+	{
+		eprintln!("{}", err);
+	}
+}
+
+fn run() -> Result<(), Outcome>
+{
 	let args = Cli::parse();
 
-	eprintln!("{}", args.path.display());
+	let album_folder = AlbumFolder::from_directory(&args.path)?;
+	let album = Album::from_album_folder(&album_folder)?;
+
+	eprintln!("{:#?}", album);
+
+	Ok(())
 }
