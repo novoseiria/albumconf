@@ -28,18 +28,42 @@ pub enum Exit
 	{
 		path: PathBuf,
 		cause: toml::de::Error
+	},
+
+	#[error("Track count mismatch: expected {expected} audio files from config, found {actual}")]
+	TrackCountMismatch
+	{
+		expected: usize,
+		actual: usize
 	}
 }
 
 #[derive(Error, Debug)]
 pub enum Fatal
 {
+	#[error("Failed to read directory {path}: {cause}")]
+	ReadDir
+	{
+		path: PathBuf,
+		cause: io::Error
+	},
+
 	#[error("Failed to read file {path}: {cause}")]
 	ReadFile
 	{
 		path: PathBuf,
 		cause: io::Error
-	}
+	},
+
+	#[error("Failed to read directory entry at {path}: {cause}")]
+	ReadDirEntry
+	{
+		path: PathBuf,
+		cause: io::Error
+	},
+
+	#[error("Iterator out of bounds")]
+	IteratorOutOfBounds
 }
 
 #[derive(Error, Debug)]

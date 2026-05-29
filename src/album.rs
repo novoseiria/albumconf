@@ -24,7 +24,7 @@ impl AlbumFolder
 
 		if !path.is_dir()
 		{
-			return Err(Exit::NotADirectory { path })
+			return Err(Exit::NotADirectory { path });
 		}
 
 		Ok(AlbumFolder { path })
@@ -43,12 +43,77 @@ impl AlbumFolder
 			.map_err(|err| Fatal::ReadFile
 				{ path: config_path.clone(), cause: err })?;
 
-		let config: AlbumConfig = toml::from_str(&config)
+		let config = toml::from_str::<AlbumConfig>(&config)
 			.map_err(|err| Exit::TOMLSyntaxError
 				{ path: config_path, cause: err })?;
 
 		Ok(config)
 	}
+
+	pub fn read_track_files(&self, discs: &[DiscConfig]) -> Result<Vec<TrackFile>, Outcome>
+	{
+		let entries = fs::read_dir(&self.path)
+			.map_err(|err| Fatal::ReadDir
+				{ path: self.path.clone(), cause: err })?
+			.map(|entry| entry
+				.map_err(|err| Fatal::ReadDirEntry
+					{ path: self.path.clone(), cause: err }))
+			.collect::<Result<Vec<_>, _>>()?;
+
+		let mut files = entries
+			.iter()
+			.map(|entry| entry.path())
+			.filter(|path| path.is_file())
+			.filter(|path| path.extension().is_some_and(|ext| ext == "flac"));
+
+		let expected_count = discs
+			.iter()
+			.map(|disc| disc.tracks.len())
+			.sum::<usize>();
+
+		let actual_count = files.clone().count();
+
+		if expected_count != actual_count
+		{
+			return Err(Exit::TrackCountMismatch
+				{
+					expected: expected_count,
+					actual: actual_count
+				}.into());
+		}
+
+		let mut track_files = Vec::new();
+
+		for (disc_number, disc) in discs.iter().enumerate()
+		{
+			for (track_number, track) in disc.tracks.iter().enumerate()
+			{
+				let file = files.next().expect("Track counts will always match here");
+
+				track_files.push(TrackFile
+					{
+						config: track.clone(),
+						disc_number: disc_number + 1,
+						track_number: track_number + 1,
+						path: file
+					});
+			}
+		}
+
+		Ok(track_files)
+	}
+}
+
+
+
+#[derive(Debug)]
+pub struct TrackFile
+{
+	config: TrackConfig,
+	disc_number: usize,
+	track_number: usize,
+
+	path: PathBuf
 }
 
 
@@ -76,7 +141,7 @@ pub struct DiscConfig
 	pub tracks: Vec<TrackConfig>
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct TrackConfig
 {
 	pub name: String,
