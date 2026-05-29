@@ -32,16 +32,15 @@ impl AlbumFolder
 
 	pub fn read_config(&self) -> Result<AlbumConfig, Outcome>
 	{
-		let path = self.path.clone();
-		let config = path.join("album.toml");
+		let config_path = self.path.join("album.toml");
 
-		if !config.exists()
+		if !config_path.is_file()
 		{
-			return Err(Exit::MissingAlbumConfig { path: config }.into());
+			return Err(Exit::MissingAlbumConfig { path: config_path }.into());
 		}
 
-		let config = fs::read_to_string(config)
-			.map_err(|err| Fatal::ReadFile { path, cause: err })?;
+		let config = fs::read_to_string(&config_path)
+			.map_err(|err| Fatal::ReadFile { path: config_path, cause: err })?;
 
 		let config: AlbumConfig = toml::from_str(&config)
 			.map_err(|err| Exit::TOMLSyntaxError { cause: err })?;
