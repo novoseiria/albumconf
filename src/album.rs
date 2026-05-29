@@ -67,17 +67,17 @@ pub struct AlbumConfig
 	source: String,
 	release_mbid: String,
 
-	discs: Vec<DiscInfo>
+	discs: Vec<DiscConfig>
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct DiscInfo
+pub struct DiscConfig
 {
-	tracks: Vec<TrackInfo>
+	tracks: Vec<TrackConfig>
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct TrackInfo
+pub struct TrackConfig
 {
 	name: String,
 	artists: Option<Vec<String>>
