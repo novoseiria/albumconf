@@ -30,7 +30,7 @@ impl AlbumFolder
 		Ok(AlbumFolder { path })
 	}
 
-	pub fn read_config(&self) -> Result<AlbumConfig, Outcome>
+	pub fn read_album_config(&self) -> Result<AlbumConfig, Outcome>
 	{
 		let config_path = self.path.join("album.toml");
 
