@@ -3,6 +3,8 @@
 
 use std::path::{Path, PathBuf};
 
+use serde::{Deserialize, Serialize};
+
 use crate::outcome::Exit;
 
 
@@ -26,4 +28,32 @@ impl AlbumFolder
 
 		Ok(AlbumFolder { path })
 	}
+}
+
+
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct AlbumConfig
+{
+	name: String,
+	album_artists: Vec<String>,
+	year: u32,
+
+	genre: String,
+	original_year: u32,
+	catalog_number: String,
+	media_type: String,
+	source: String,
+	release_mbid: String,
+
+	discs: Vec<DiscConfig>
+}
+
+pub type DiscConfig = Vec<TrackConfig>;
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct TrackConfig
+{
+	name: String,
+	artists: Option<Vec<String>>
 }
