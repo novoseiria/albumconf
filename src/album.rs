@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: Copyright (C) Nile Jocson <novoseiria@gmail.com>
 // SPDX-License-Identifier: MPL-2.0
 
+use std::fs;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::outcome::Exit;
+use crate::outcome::{Exit, Fatal, Outcome};
 
 
 
@@ -27,6 +28,25 @@ impl AlbumFolder
 		}
 
 		Ok(AlbumFolder { path })
+	}
+
+	pub fn read_config(&self) -> Result<AlbumConfig, Outcome>
+	{
+		let path = self.path.clone();
+		let config = path.join("album.toml");
+
+		if !config.exists()
+		{
+			return Err(Exit::MissingAlbumConfig { path: config }.into());
+		}
+
+		let config = fs::read_to_string(config)
+			.map_err(|err| Fatal::ReadFile { path, cause: err })?;
+
+		let config: AlbumConfig = toml::from_str(&config)
+			.map_err(|err| Exit::TOMLSyntaxError { cause: err })?;
+
+		Ok(config)
 	}
 }
 
