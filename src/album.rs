@@ -40,10 +40,12 @@ impl AlbumFolder
 		}
 
 		let config = fs::read_to_string(&config_path)
-			.map_err(|err| Fatal::ReadFile { path: config_path, cause: err })?;
+			.map_err(|err| Fatal::ReadFile
+				{ path: config_path.clone(), cause: err })?;
 
 		let config: AlbumConfig = toml::from_str(&config)
-			.map_err(|err| Exit::TOMLSyntaxError { cause: err })?;
+			.map_err(|err| Exit::TOMLSyntaxError
+				{ path: config_path, cause: err })?;
 
 		Ok(config)
 	}

@@ -23,9 +23,10 @@ pub enum Exit
 		path: PathBuf
 	},
 
-	#[error("TOML syntax error: {cause}")]
+	#[error("Failed to parse {path} as TOML: {cause}")]
 	TOMLSyntaxError
 	{
+		path: PathBuf,
 		cause: toml::de::Error
 	}
 }
