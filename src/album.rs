@@ -168,7 +168,7 @@ impl Track
 		tags.set_vorbis("DISCNUMBER", vec![self.disc_number.to_string()]);
 		tags.set_vorbis("DISCTOTAL", vec![album_config.discs.len().to_string()]);
 		tags.set_vorbis("TRACKNUMBER", vec![self.track_number.to_string()]);
-		tags.set_vorbis("TRACKTOTAL", vec![album_config.discs[self.disc_number].tracks.len().to_string()]);
+		tags.set_vorbis("TRACKTOTAL", vec![album_config.discs[self.disc_number - 1].tracks.len().to_string()]);
 
 		if let Some(artists) = &self.config.artists
 		{

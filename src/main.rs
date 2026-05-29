@@ -29,6 +29,7 @@ fn run() -> Result<(), Outcome>
 
 	let album_folder = AlbumFolder::from_directory(&args.path)?;
 	let album = Album::from_album_folder(&album_folder)?;
+	album.apply_config()?;
 
 	eprintln!("{:#?}", album);
 
