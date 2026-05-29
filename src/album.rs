@@ -146,7 +146,7 @@ pub struct AlbumConfig
 	pub year: u32,
 
 	pub genre: String,
-	pub original_year: u32,
+	pub release_year: u32,
 	pub catalog_number: String,
 	pub media_type: String,
 	pub audio_channels: String,
