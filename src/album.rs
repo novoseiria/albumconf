@@ -5,6 +5,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use itertools::Itertools;
+use metaflac::Tag;
 use serde::{Deserialize, Serialize};
 
 use crate::outcome::{Exit, Fatal, Outcome};
@@ -124,6 +125,16 @@ impl Album
 
 		Ok(Album { config, tracks })
 	}
+
+	pub fn apply_config(&self) -> Result<(), Fatal>
+	{
+		for track in &self.tracks
+		{
+			track.apply_config(&self.config)?;
+		}
+
+		Ok(())
+	}
 }
 
 #[derive(Debug)]
@@ -134,6 +145,46 @@ pub struct Track
 	track_number: usize,
 
 	path: PathBuf
+}
+
+impl Track
+{
+	pub fn apply_config(&self, album_config: &AlbumConfig) -> Result<(), Fatal>
+	{
+		let mut tags = Tag::read_from_path(&self.path)
+			.map_err(|err| Fatal::ReadFLACTags
+				{ path: self.path.clone(), cause: err })?;
+
+		tags.set_vorbis("ALBUM", vec![&album_config.name]);
+		tags.set_vorbis("ALBUMARTIST", vec![album_config.album_artists.join(", ")]);
+		tags.set_vorbis("DATE", vec![album_config.year.to_string()]);
+
+		tags.set_vorbis("GENRE", vec![&album_config.genre]);
+		tags.set_vorbis("CATALOGNUMBER", vec![&album_config.catalog_number]);
+		tags.set_vorbis("MEDIATYPE", vec![&album_config.media_type]);
+		tags.set_vorbis("MUSICBRAINZ_ALBUMID", vec![&album_config.release_mbid]);
+
+		tags.set_vorbis("TITLE", vec![&self.config.name]);
+		tags.set_vorbis("DISCNUMBER", vec![self.disc_number.to_string()]);
+		tags.set_vorbis("DISCTOTAL", vec![album_config.discs.len().to_string()]);
+		tags.set_vorbis("TRACKNUMBER", vec![self.track_number.to_string()]);
+		tags.set_vorbis("TRACKTOTAL", vec![album_config.discs[self.disc_number].tracks.len().to_string()]);
+
+		if let Some(artists) = &self.config.artists
+		{
+			tags.set_vorbis("ARTIST", vec![artists.join(", ")]);
+		}
+		else
+		{
+			tags.set_vorbis("ARTIST", vec![album_config.album_artists.join(", ")]);
+		}
+
+		tags.save()
+			.map_err(|err| Fatal::WriteFLACTags
+				{ path: self.path.clone(), cause: err })?;
+
+		Ok(())
+	}
 }
 
 

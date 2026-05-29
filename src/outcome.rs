@@ -60,6 +60,20 @@ pub enum Fatal
 	{
 		path: PathBuf,
 		cause: io::Error
+	},
+
+	#[error("Failed to read FLAC tags of {path}: {cause}")]
+	ReadFLACTags
+	{
+		path: PathBuf,
+		cause: metaflac::Error
+	},
+
+	#[error("Failed to write FLAC tags of {path}: {cause}")]
+	WriteFLACTags
+	{
+		path: PathBuf,
+		cause: metaflac::Error
 	}
 }
 
