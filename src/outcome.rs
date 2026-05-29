@@ -60,10 +60,7 @@ pub enum Fatal
 	{
 		path: PathBuf,
 		cause: io::Error
-	},
-
-	#[error("Iterator out of bounds")]
-	IteratorOutOfBounds
+	}
 }
 
 #[derive(Error, Debug)]
