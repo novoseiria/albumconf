@@ -4,6 +4,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 
 use crate::outcome::{Exit, Fatal, Outcome};
@@ -64,7 +65,8 @@ impl AlbumFolder
 			.iter()
 			.map(|entry| entry.path())
 			.filter(|path| path.is_file())
-			.filter(|path| path.extension().is_some_and(|ext| ext == "flac"));
+			.filter(|path| path.extension().is_some_and(|ext| ext == "flac"))
+			.sorted_by(|a, b| natord::compare(&a.to_string_lossy(), &b.to_string_lossy()));
 
 		let expected_count = discs
 			.iter()
