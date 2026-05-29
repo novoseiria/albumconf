@@ -56,29 +56,29 @@ impl AlbumFolder
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AlbumConfig
 {
-	name: String,
-	album_artists: Vec<String>,
-	year: u32,
+	pub name: String,
+	pub album_artists: Vec<String>,
+	pub year: u32,
 
-	genre: String,
-	original_year: u32,
-	catalog_number: String,
-	media_type: String,
-	source: String,
-	release_mbid: String,
+	pub genre: String,
+	pub original_year: u32,
+	pub catalog_number: String,
+	pub media_type: String,
+	pub source: String,
+	pub release_mbid: String,
 
-	discs: Vec<DiscConfig>
+	pub discs: Vec<DiscConfig>
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct DiscConfig
 {
-	tracks: Vec<TrackConfig>
+	pub tracks: Vec<TrackConfig>
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TrackConfig
 {
-	name: String,
-	artists: Option<Vec<String>>
+	pub name: String,
+	pub artists: Option<Vec<String>>
 }
