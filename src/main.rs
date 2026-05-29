@@ -5,6 +5,7 @@ use clap::Parser;
 
 
 
+mod album;
 mod cli;
 mod outcome;
 

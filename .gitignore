@@ -9,5 +9,6 @@
 
 !/src/
 !/src/main.rs
+!/src/album.rs
 !/src/cli.rs
 !/src/outcome.rs
