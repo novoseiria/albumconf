@@ -104,8 +104,6 @@ impl AlbumFolder
 	}
 }
 
-
-
 #[derive(Debug)]
 pub struct TrackFile
 {
@@ -114,6 +112,26 @@ pub struct TrackFile
 	track_number: usize,
 
 	path: PathBuf
+}
+
+
+
+#[derive(Debug)]
+pub struct Album
+{
+	config: AlbumConfig,
+	tracks: Vec<TrackFile>
+}
+
+impl Album
+{
+	pub fn from_album_folder(album_folder: &AlbumFolder) -> Result<Self, Outcome>
+	{
+		let config = album_folder.read_album_config()?;
+		let tracks = album_folder.read_track_files(&config.discs)?;
+
+		Ok(Album { config, tracks })
+	}
 }
 
 
