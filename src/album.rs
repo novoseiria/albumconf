@@ -50,7 +50,7 @@ impl AlbumFolder
 		Ok(config)
 	}
 
-	pub fn read_track_files(&self, discs: &[DiscConfig]) -> Result<Vec<TrackFile>, Outcome>
+	pub fn read_track_files(&self, discs: &[DiscConfig]) -> Result<Vec<Track>, Outcome>
 	{
 		let entries = fs::read_dir(&self.path)
 			.map_err(|err| Fatal::ReadDir
@@ -90,7 +90,7 @@ impl AlbumFolder
 			{
 				let file = files.next().expect("Track counts will always match here");
 
-				track_files.push(TrackFile
+				track_files.push(Track
 					{
 						config: track.clone(),
 						disc_number: disc_number + 1,
@@ -104,23 +104,13 @@ impl AlbumFolder
 	}
 }
 
-#[derive(Debug)]
-pub struct TrackFile
-{
-	config: TrackConfig,
-	disc_number: usize,
-	track_number: usize,
-
-	path: PathBuf
-}
-
 
 
 #[derive(Debug)]
 pub struct Album
 {
 	config: AlbumConfig,
-	tracks: Vec<TrackFile>
+	tracks: Vec<Track>
 }
 
 impl Album
@@ -132,6 +122,16 @@ impl Album
 
 		Ok(Album { config, tracks })
 	}
+}
+
+#[derive(Debug)]
+pub struct Track
+{
+	config: TrackConfig,
+	disc_number: usize,
+	track_number: usize,
+
+	path: PathBuf
 }
 
 
